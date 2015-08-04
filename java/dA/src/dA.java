@@ -1,7 +1,9 @@
 /**
- * Denoising Autoencoder
+ * Denoising Autoencoder that uses tied weights and the tanh sigmoid to reconstruct a noisy signal
+ * from training data. 
  * @author @yusugomori on Github
- *
+ * @author Andrew Johnston
+ * @version 1.0-ALPHA
  */
 
 import java.util.Random;
@@ -154,7 +156,7 @@ public class dA {
 	}
 	
 	/**
-	 * "Decodes" the signal. 
+	 * "Decodes" the signal using formula z=s(W'y + b'). W' is the matrix transpose of W, and b' 
 	 * @param y the input signal to reconstruct
 	 * @param z the outputted reconstructed signal
 	 */
