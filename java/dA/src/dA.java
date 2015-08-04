@@ -1,15 +1,49 @@
+/**
+ * Denoising Autoencoder
+ * @author @yusugomori on Github
+ *
+ */
+
 import java.util.Random;
 
 public class dA {
 	public int N;
+	
+	/**
+	 * Number of visible units
+	 */ 
 	public int n_visible;
+	
+	/**
+	 * Number of hidden units
+	 */ 
 	public int n_hidden;
+	
+	/**
+	 * Set of weights for the denoising autoencoder
+	 */
 	public double[][] W;
+	
+	/**
+	 * Set of biases for the hidden units
+	 */
 	public double[] hbias;
+	
+	/**
+	 * Set of biases for the visible units. Corresponds to b'
+	 */
 	public double[] vbias;
+	
+	/**
+	 * Random number generator used by the dA
+	 */
 	public Random rng;
 	
-	
+	/**
+	 * Get a uniform random number
+	 * @param min the minimum value of the number
+	 * @param max the maximum value of the number
+	 */ 
 	public double uniform(double min, double max) {
 		return rng.nextDouble() * (max - min) + min;
 	}
@@ -28,19 +62,40 @@ public class dA {
 		return c;
 	}
 	
+	/**
+	 * Computes tanh(x) for a given x
+	 * @param x the input to tanh()
+	 * @return the value of tanh() at x
+	 */ 
 	public static double sigmoid(double x) {
 		return 1.0 / (1.0 + Math.pow(Math.E, -x));
 	}
 
+	/**
+	 * TODO: DESCRIPTION HERE
+	 * @param N
+	 * @param n_visible
+	 * @param n_hidden
+	 * @param W
+	 * @param hbias
+	 * @param vbias
+	 * @param rng 
+	 */
 	public dA(int N, int n_visible, int n_hidden, 
-			double[][] W, double[] hbias, double[] vbias, Random rng) {
+			@Nullable double[][] W, double[] hbias, double[] vbias, @Nullable Random rng) {
 		this.N = N;
 		this.n_visible = n_visible;
 		this.n_hidden = n_hidden;
 
-		if(rng == null)	this.rng = new Random(1234);
-		else this.rng = rng;
-				
+		//Create a random generator with static seed if one is not provided
+		if(rng == null)	{
+			this.rng = new Random(1234);
+		} else {
+			this.rng = rng;
+		}
+		
+		//If W is null, create a two-dimensional array 
+		//of random numbers between -(1/n_visible) and (1/n_visible)		
 		if(W == null) {
 			this.W = new double[this.n_hidden][this.n_visible];
 			double a = 1.0 / this.n_visible;
@@ -54,21 +109,28 @@ public class dA {
 			this.W = W;
 		}
 		
+		//If hbias is null create an array of zeros and assign it to hbias
 		if(hbias == null) {
 			this.hbias = new double[this.n_hidden];
-			for(int i=0; i<this.n_hidden; i++) this.hbias[i] = 0;
+			for(int i=0; i<this.n_hidden; i++) {
+				this.hbias[i] = 0;
+			}
 		} else {
 			this.hbias = hbias;
 		}
 		
+		//If vbias is null create an array of zeros and assign it to vbias
 		if(vbias == null) {
 			this.vbias = new double[this.n_visible];
-			for(int i=0; i<this.n_visible; i++) this.vbias[i] = 0;
+			for(int i=0; i<this.n_visible; i++) {
+			   	this.vbias[i] = 0;
+			}
 		} else {
 			this.vbias = vbias;
 		}	
 	}
 	
+	//Corrupt an input x
 	public void get_corrupted_input(int[] x, int[] tilde_x, double p) {
 		for(int i=0; i<n_visible; i++) {
 			if(x[i] == 0) {
@@ -91,7 +153,11 @@ public class dA {
 		}
 	}
 	
-	// Decode
+	/**
+	 * "Decodes" the signal. 
+	 * @param y the input signal to reconstruct
+	 * @param z the outputted reconstructed signal
+	 */
 	public void get_reconstructed_input(double[] y, double[] z) {
 		for(int i=0; i<n_visible; i++) {
 			z[i] = 0;
